@@ -1,0 +1,5 @@
+.refresh-icon {
+    position: relative;
+    top: -3px; /* İstediğiniz ayarı yapın */
+    margin-left: -32px; /* inputun genişliği ile refresh iconun genişliğini değiştirebilirsiniz */
+}
