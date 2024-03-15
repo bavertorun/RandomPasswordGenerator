@@ -1,6 +1,7 @@
 import Checkbox from "./Checkbox.jsx";
 import {useEffect, useReducer, useState} from "react";
 
+import { IoRefreshOutline } from "react-icons/io5";
 
 const reducer = (state,payload)=>{
     switch (payload.type){
@@ -84,8 +85,9 @@ export default function Generator() {
     return (
         <>
             <div className="d-flex justify-content-center">
-                <input type="text" value={handleText} className="form-control rounded-pill w-50 shadow mx-1" readOnly />
-                <button disabled={state.length==0} onClick={(e)=>handleCopied(e.target.value)} className="btn btn-outline-primary p-3 px-4 shadow rounded-pill">{copied ? 'Copied!' : 'Copy'}</button>
+                <input type="text" value={handleText} className="form-control rounded-pill w-50 shadow mx-1" readOnly/>
+                <button disabled={state.length == 0} onClick={() => generatePassword()} className="btn btn-outline-success p-3 mx-2 px-4 shadow rounded-pill"><IoRefreshOutline className={'fs-4'}  /></button>
+                <button disabled={state.length == 0} onClick={(e) => handleCopied(e.target.value)} className="btn btn-outline-primary p-3 px-4 shadow rounded-pill">{copied ? 'Copied!' : 'Copy'}</button>
             </div>
             <div className={'row w-75 my-4'}>
                 <label htmlFor="passwordRange" className="form-label">Password Length: {state.length}</label>
