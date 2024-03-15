@@ -1,16 +1,46 @@
 import Checkbox from "./Checkbox.jsx";
-import {useEffect, useState} from "react";
+import {useEffect, useReducer, useState} from "react";
 
+
+const reducer = (state,payload)=>{
+    switch (payload.type){
+        case 'length':
+            return {
+                ...state,
+                length: payload.val
+            }
+        case 'lowerCase':
+            return{
+                ...state,
+                lowerCase: !state.lowerCase
+            }
+        case 'upperCase':
+            return{
+                ...state,
+                upperCase: !state.upperCase
+            }
+        case 'numbers':
+            return{
+                ...state,
+                numbers: !state.numbers
+            }
+        case 'symbols':
+            return{
+                ...state,
+                symbols: !state.symbols
+            }
+    }
+}
 
 export default function Generator() {
 
-    const [passGen, setPassGen] = useState({
+    const [state,dispatch] = useReducer(reducer,{
         length: 0,
         lowerCase: true,
         upperCase: false,
         numbers: true,
         symbols: false
-    });
+    })
 
     const [handleText, setHandleText] = useState('');
     const [copied,setCopied] = useState(false)
@@ -24,96 +54,65 @@ export default function Generator() {
         let password = '';
         let characters = '';
 
-        passGen.lowerCase && (characters += lowerCase);
-        passGen.upperCase && (characters += upperCase);
-        passGen.numbers && (characters += numbers);
-        passGen.symbols && (characters += symbols);
+        state.lowerCase && (characters += lowerCase);
+        state.upperCase && (characters += upperCase);
+        state.numbers && (characters += numbers);
+        state.symbols && (characters += symbols);
 
-        for (let i = 0; i < passGen.length; i++) {
+        for (let i = 0; i < state.length; i++) {
             password += characters.charAt(Math.floor(Math.random() * characters.length));
         }
 
         setHandleText(password);
     };
-    const handleChangeLowerCase = () => {
-        setPassGen({
-            ...passGen,
-            lowerCase: !passGen.lowerCase
-        });
-    };
-    const handleChangeUpperCase = () => {
-        setPassGen({
-            ...passGen,
-            upperCase: !passGen.upperCase
-        });
-    };
-    const handleChangeNumbers = () => {
-        setPassGen({
-            ...passGen,
-            numbers: !passGen.numbers
-        });
-    };
-    const handleChangeSymbols = () => {
-        setPassGen({
-            ...passGen,
-            symbols: !passGen.symbols
-        });
-    };
-    const handlePasswordLength = val => {
-        setPassGen({
-            ...passGen,
-            length: val
-        });
-    };
 
     const handleCopied = () =>{
-        if(passGen.length > 0){
+        if(state.length > 0){
             navigator.clipboard.writeText(handleText);
             setCopied(true)
         }
-        setInterval(()=>{
+        setTimeout(()=>{
             setCopied(false)
         },1000)
 
     }
 
-    const {length,lowerCase,upperCase,numbers,symbols} = passGen
     useEffect(() => {
         generatePassword()
-    }, [length,lowerCase,upperCase,numbers,symbols]);
+    }, [state]);
 
     return (
         <>
             <div className="d-flex justify-content-center">
                 <input type="text" value={handleText} className="form-control rounded-pill w-50 shadow mx-1" readOnly />
-                <button disabled={length==0} onClick={()=>handleCopied()} className="btn btn-outline-primary p-3 px-4 shadow rounded-pill">{copied ? 'Copied!' : 'Copy'}</button>
+                <button disabled={state.length==0} onClick={(e)=>handleCopied(e.target.value)} className="btn btn-outline-primary p-3 px-4 shadow rounded-pill">{copied ? 'Copied!' : 'Copy'}</button>
             </div>
             <div className={'row w-75 my-4'}>
-                <label htmlFor="passwordRange" className="form-label">Password Length: {passGen.length}</label>
-                <input type="range" defaultValue={passGen.length} onChange={e => handlePasswordLength(e.target.value)}
+                <label htmlFor="passwordRange" className="form-label">Password Length: {state.length}</label>
+                <input type="range" defaultValue={state.length} onChange={e => dispatch({type:'length',val:e.target.value})}
                        className="form-range" min="0" max="50" step="1"/>
             </div>
             <div className="row justify-content-center mt-2">
                 <Checkbox
-                    onChange={() => handleChangeLowerCase()}
+                    onChange={() => dispatch({type:'lowerCase'})}
                     label={'abc'}
-                    value={passGen.lowerCase}
+                    value={state.lowerCase}
                 />
                 <Checkbox
-                    onChange={() => handleChangeUpperCase()}
+                    onChange={() => dispatch({type:'upperCase'})}
                     label={'ABC'}
-                    value={passGen.upperCase}
+                    value={state.upperCase}
                 />
                 <Checkbox
-                    onChange={() => handleChangeNumbers()}
+                    onChange={() => dispatch({type:'numbers'})}
                     label={'123'}
-                    value={passGen.numbers}
+                    value={state.numbers}
 
                 />
                 <Checkbox
-                    onChange={() => handleChangeSymbols()}
+                    onChange={() => dispatch({type:'symbols'})}
                     label={'#$&'}
-                    value={passGen.symbols}
+                    value={state.symbols}
                 />
             </div>
 
